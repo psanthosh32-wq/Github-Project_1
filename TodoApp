@@ -1,0 +1,129 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class TodoApp extends JFrame implements ActionListener {
+
+    JTextField taskField;
+    JButton addButton, deleteButton, clearButton, completeButton;
+    DefaultListModel<String> listModel;
+    JList<String> taskList;
+
+    public TodoApp() {
+
+        setTitle("To-Do List Application");
+        setSize(500, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        // Top Panel
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+
+        taskField = new JTextField();
+        addButton = new JButton("Add Task");
+
+        topPanel.add(taskField, BorderLayout.CENTER);
+        topPanel.add(addButton, BorderLayout.EAST);
+
+        // Task List
+        listModel = new DefaultListModel<>();
+        taskList = new JList<>(listModel);
+        JScrollPane scrollPane = new JScrollPane(taskList);
+
+         // Bottom Panel
+        JPanel bottomPanel = new JPanel();
+
+        completeButton = new JButton("Mark Complete");
+        deleteButton = new JButton("Delete Task");
+        clearButton = new JButton("Clear All");
+
+        bottomPanel.add(completeButton);
+        bottomPanel.add(deleteButton);
+        bottomPanel.add(clearButton);
+
+        add(topPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        addButton.addActionListener(this);
+        deleteButton.addActionListener(this);
+        clearButton.addActionListener(this);
+        completeButton.addActionListener(this);
+
+        setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == addButton) {
+
+            String task = taskField.getText().trim();
+
+            if (!task.isEmpty()) {
+                listModel.addElement(task);
+                taskField.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Please enter a task.");
+            }
+
+        }
+
+        else if (e.getSource() == deleteButton) {
+
+            int index = taskList.getSelectedIndex();
+
+            if (index != -1) {
+                listModel.remove(index);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Select a task to delete.");
+            }
+
+        }
+
+        else if (e.getSource() == clearButton) {
+
+            int option = JOptionPane.showConfirmDialog(
+                    this,
+                    "Are you sure you want to clear all tasks?",
+                    "Confirm",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (option == JOptionPane.YES_OPTION) {
+                listModel.clear();
+            }
+
+        }
+
+        else if (e.getSource() == completeButton) {
+
+            int index = taskList.getSelectedIndex();
+
+            if (index != -1) {
+
+                String task = listModel.get(index);
+
+                if (!task.startsWith("✔ ")) {
+                    listModel.set(index, "✔ " + task);
+                }
+
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Select a task.");
+            }
+
+        }
+
+    }
+
+    public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(() -> new TodoApp());
+
+    }
+
+}
